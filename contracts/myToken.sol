@@ -1,9 +1,9 @@
 pragma solidity ^0.4.2;
 
 contract myToken {
-    uint256 public totalSuply;
+    uint256 public totalSupply;
 
     function myToken() public {
-        totalSuply = 1000000;
+        totalSupply = 1000000;
     }
 }
