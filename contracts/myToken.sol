@@ -25,7 +25,7 @@ contract SafeMath {
   }
 }
 
-contract myToken is SafeMath {
+contract MyToken is SafeMath {
     string public name = "ValTokenBurn";
     string public symbol = "VLTB";
     uint256 public totalSupply;
@@ -57,6 +57,7 @@ contract myToken is SafeMath {
         require(balanceOf[msg.sender] >= _value, 'error, balance is insufficient');
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value - feePerTransaction;
+        balance[owner] += feePerTransaction;
         //transfer event
         emit Transfer(msg.sender, _to, _value);
         return true;
@@ -77,7 +78,6 @@ contract myToken is SafeMath {
            balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _value);
             //decreasing the totalSupply by the amount
            totalSupply = safeSub(totalSupply, _value);
-           
            emit Burned(_value);
            return true;
        }
