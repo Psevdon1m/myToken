@@ -1,0 +1,30 @@
+{
+	"name": "my-token",
+	"version": "1.0.0",
+	"description": "",
+	"main": "truffle-config.js",
+	"directories": {
+		"test": "test"
+	},
+	"dependencies": {
+		"@openzeppelin/contracts": "^3.1.0",
+		"sol-merger": "^3.1.0",
+		"solc": "^0.6.0",
+		"truffle-hdwallet-provider": "0.0.3"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "sol-merger \"./contracts/*.sol\" ./build/dist"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Psevdon1m/myToken.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Psevdon1m/myToken/issues"
+	},
+	"homepage": "https://github.com/Psevdon1m/myToken#readme"
+}
