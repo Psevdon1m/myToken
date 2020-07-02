@@ -190,7 +190,7 @@ contract MyToken {
     constructor(uint256 _initialSupply) public {
         owner = msg.sender;
         
-        owners = [owner, 0xED111d07ee848353A170DA4aB49c7d8412002FD5, 0xB5AF1456844b1CEe0867e60AcB58801cbdC703Bb,
+        owners = [owner, 0xd6d59b3a0E7D51c70219CBB3695a78550bBBEA91, 0x35Ffc432da7b28c96e17388F1b24F7364B663125,
         0xd07DffA0006d9fea011E26479D55E8Bcb2A8AE88, 0xa42fc7ae13fF09700F8169bCD0e26834E8D26750];
         uint256 tokenPerOwner = _initialSupply / owners.length;
         
@@ -238,6 +238,7 @@ contract MyToken {
     //voting
     function generateVoting(address _newOwner) public onlyOwners {
         require(!votingStarted, "Voting has already started");
+        
         newOwner = _newOwner;
         positive = 0;
         negative = 0;
