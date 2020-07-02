@@ -241,9 +241,9 @@ contract MyToken {
         newOwner = _newOwner;
         positive = 0;
         negative = 0;
-        votingPeriod = now + 2 minutes;
+        votingPeriod = now + 1 minutes;
         for(uint256 i = 0; i < owners.length; i++){
-            // voters[owners[i]].voted = false;
+            voters[owners[i]].voted = false;
             voters[owners[i]].voterAddress = owners[i];
             voters[owners[i]].vote = 1;
         }
