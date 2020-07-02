@@ -3,6 +3,7 @@ pragma solidity ^0.6.0;
 // import "../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 // import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/math/SafeMath.sol";
 // import "@openzeppelin/contracts/math/SafeMath.sol";
+// import './Voting.sol';
 
 library SafeMath {
     /**
@@ -148,16 +149,33 @@ library SafeMath {
 }
 
 contract MyToken {
+    
+     struct Voter {
+        
+        bool voted;  // if true, that person already voted
+        address voterAddress; // address of a person who voted
+        uint8 vote;   // index of the voted proposal
+        
+    }
+    
+    
+    
     using SafeMath for uint256;
+    
+    uint8 public positive;
+    uint8 public negative;
+    uint256 votingPeriod;
+    address newOwner;
+    bool votingStarted;
+    
     string public name = "ValTokenBurnFull";
     string public symbol = "VLTBF";
     uint256 public totalSupply;
     uint256 public feePerTransaction = 1;
     address private owner;
     uint8 public decimals = 0;
-    
     address[] public owners;
-    string testMessage = 'it works';
+    uint256 public voteDuration;
     //from this time on tokens may be burned +24 hours from 01.07.20
     uint256 public burnStartTime = now + 24 hours;
 
@@ -166,13 +184,13 @@ contract MyToken {
     event Burned(uint256 amount);
 
     mapping(address => uint256) public balanceOf;
-
     mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => Voter) public voters;
 
     constructor(uint256 _initialSupply) public {
         owner = msg.sender;
         
-        owners = [owner, 0x30B61000B318dFaFEf31b7Dc9A7084f4EF1CE4cb, 0x6350b6659210C47e4810fE885151bCdC07DDa758,
+        owners = [owner, 0xED111d07ee848353A170DA4aB49c7d8412002FD5, 0xB5AF1456844b1CEe0867e60AcB58801cbdC703Bb,
         0xd07DffA0006d9fea011E26479D55E8Bcb2A8AE88, 0xa42fc7ae13fF09700F8169bCD0e26834E8D26750];
         uint256 tokenPerOwner = _initialSupply / owners.length;
         
@@ -181,6 +199,8 @@ contract MyToken {
         }
         
         totalSupply = _initialSupply;
+        
+        
         //allocate initial supply
         emit Transfer(address(0), owner, _initialSupply);
     }
@@ -210,14 +230,61 @@ contract MyToken {
         }
     }
     //modifier grands access to owners only
-    modifier onlyOwner() {
+    modifier onlyOwners() {
         require(isOwner(), "You are not an owner");
         _;
     }
     
-    function vote() public view   onlyOwner  returns (string memory){
-         
+    //voting
+    function generateVoting(address _newOwner) public onlyOwners {
+        require(!votingStarted, "Voting has already started");
+        newOwner = _newOwner;
+        positive = 0;
+        negative = 0;
+        votingPeriod = now + 2 minutes;
+        for(uint256 i = 0; i < owners.length; i++){
+            // voters[owners[i]].voted = false;
+            voters[owners[i]].voterAddress = owners[i];
+            voters[owners[i]].vote = 1;
+        }
+        votingStarted = true;
     }
+    
+    function vote(string memory _choise) public onlyOwners {
+        require(voters[msg.sender].vote == 1, 'You can vote only once');
+        // require(msg.sender == voters.voterAddress, 'You are not allowed to vote' )
+        require(voters[msg.sender].voted != true, 'You already voted');
+        if(keccak256(abi.encodePacked("yes")) ==  keccak256(abi.encodePacked(_choise))){
+            positive++;
+        }
+         if (keccak256(abi.encodePacked("no")) ==  keccak256(abi.encodePacked(_choise))) {
+            negative++;
+        }
+        voters[msg.sender].vote--;
+        voters[msg.sender].voted = true;
+    }
+    
+    function endOfVote() public onlyOwners {
+        require(votingStarted, "Voting has not been started yet");
+        require(now > votingPeriod, "Voting is not over");
+        require(positive > negative, "The address wasn't accepted");
+        owners.push(newOwner);
+        votingStarted = false;
+    }
+    
+    
+    
+    // function generateVotingPeriod() private  returns (bool) {
+    //     voteDuration = now + 24 hours;
+    //     while(now <= voteDuration){
+    //         return true;
+    //     }
+    // }
+    // function createVote() public onlyOwners  returns (string memory){
+    //      generateVotingPeriod();
+    //      require(generateVotingPeriod(), 'the voiting is over');
+         
+    // }
     
     
  
@@ -245,7 +312,7 @@ contract MyToken {
 
 
     // burnign function
-   function burn(uint256 _value)  public onlyOwner returns (bool success)  {
+   function burn(uint256 _value)  public onlyOwners returns (bool success)  {
        //we restrict ourseleves to burn tokens after some perion of time.
        if (now > burnStartTime) {
            //checking that amount is less or equal to user's balance
