@@ -239,15 +239,16 @@ contract MyToken {
     function generateVoting(address _newOwner) public onlyOwners {
         require(!votingStarted, "Voting has already started");
         
-        newOwner = _newOwner;
-        positive = 0;
-        negative = 0;
-        votingPeriod = now + 1 minutes;
         for(uint256 i = 0; i < owners.length; i++){
+            require(_newOwner != owners[i], 'this address is already among the owners');
             voters[owners[i]].voted = false;
             voters[owners[i]].voterAddress = owners[i];
             voters[owners[i]].vote = 1;
         }
+        newOwner = _newOwner;
+        positive = 0;
+        negative = 0;
+        votingPeriod = now + 1 minutes;
         votingStarted = true;
     }
     
