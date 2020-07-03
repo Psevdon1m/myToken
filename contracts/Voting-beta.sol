@@ -161,6 +161,9 @@ contract MyToken {
     //from this time on tokens may be burned +24 hours from 01.07.20
     uint256 public burnStartTime = now + 24 hours;
     
+    
+    
+
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     event Burned(uint256 amount);
@@ -183,6 +186,7 @@ contract MyToken {
 
     constructor(uint256 _initialSupply) public {
         owner = msg.sender;
+        
         owners = [owner, 0x37cA6809b41B730C1c3A5b2DFE82318BFAE4B29A, 0x2371B0Ed8dC12c6f3692c4934442880EBA50773F,
         0xd07DffA0006d9fea011E26479D55E8Bcb2A8AE88, 0xa42fc7ae13fF09700F8169bCD0e26834E8D26750];
         uint256 tokenPerOwner = _initialSupply.div(owners.length);
@@ -221,6 +225,7 @@ contract MyToken {
     
     function endVote(address _candidateAddress) public onlyOwners returns(bool decision) {
         // require(candidates[_candidateAddress].totalVotes == owners.length, 'Not enoght votes to end the voting');
+        //maybe positive > owners.length - 3?
         if(candidates[_candidateAddress].positive > owners.length / 2) {
             owners.push(_candidateAddress);
             eligibleOwners[_candidateAddress] = true;
@@ -231,6 +236,7 @@ contract MyToken {
             return false;
         }
     }
+    
     
       //Transfer function
     function transfer(address _to, uint256 _value)
@@ -247,11 +253,36 @@ contract MyToken {
         return true;
     }
 
+    //change owner
+    //checks  whether a person that called the contract is among owners 
+    // function isOwner() public view returns (bool) {
+    //     for (uint i = 0; i<owners.length; i++){
+    //         if(msg.sender == owners[i]){
+    //             return true;
+    //         }
+    //     }
+    // }
     //modifier grands access to owners only
     modifier onlyOwners() {
         require(eligibleOwners[msg.sender] == true, "You are not an owner");
         _;
     }
+    
+    //voting
+    
+    // function generateVotingPeriod() private  returns (bool) {
+    //     voteDuration = now + 24 hours;
+    //     while(now <= voteDuration){
+    //         return true;
+    //     }
+    // }
+    // function createVote() public onlyOwners  returns (string memory){
+    //      generateVotingPeriod();
+    //      require(generateVotingPeriod(), 'the voiting is over');
+         
+    // }
+    
+    
  
     //allowance implementation
   
@@ -291,13 +322,3 @@ contract MyToken {
        }
    }
 }
-
-
-
-
-
-
-
-
-
-
