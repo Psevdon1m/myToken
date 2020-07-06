@@ -164,6 +164,8 @@ contract MyToken {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     event Burned(uint256 amount);
+    event CandidateAdded(address indexed _candidate);
+    event VoteHappened(address indexed _candidate, uint256 _numberOfVotes);
     
     struct CandidateData {
         address proposal;
@@ -206,6 +208,7 @@ contract MyToken {
         candidates[_candidateAddress].positive = 1;
         candidates[_candidateAddress].alreadyOwner = eligibleOwners[_candidateAddress];
         candidates[_candidateAddress].isCandidate = true;
+        emit CandidateAdded(_candidateAddress);
     }
     
     function vote(address _candidateAddress, bool _choice) public onlyOwners {
@@ -225,11 +228,15 @@ contract MyToken {
             owners.push(_candidateAddress);
             eligibleOwners[_candidateAddress] = true;
             delete candidates[_candidateAddress];
+            emit VoteHappened(_candidateAddress, candidates[_candidateAddress].positive);
             return true;
+
         }else {
             delete candidates[_candidateAddress];
+            emit VoteHappened(_candidateAddress, candidates[_candidateAddress].positive);
             return false;
         }
+        
     }
     
       //Transfer function
