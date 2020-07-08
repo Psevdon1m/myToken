@@ -1,153 +1,6 @@
 pragma solidity ^0.6.0;
 
-// import "../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
-// import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/math/SafeMath.sol";
-// import "@openzeppelin/contracts/math/SafeMath.sol";
-// import './Voting.sol';
 import './Sharing.sol';
-
-// library SafeMath {
-//     /**
-//      * @dev Returns the addition of two unsigned integers, reverting on
-//      * overflow.
-//      *
-//      * Counterpart to Solidity's `+` operator.
-//      *
-//      * Requirements:
-//      *
-//      * - Addition cannot overflow.
-//      */
-//     function add(uint256 a, uint256 b) internal pure returns (uint256) {
-//         uint256 c = a + b;
-//         require(c >= a, "SafeMath: addition overflow");
-
-//         return c;
-//     }
-
-//     /**
-//      * @dev Returns the subtraction of two unsigned integers, reverting on
-//      * overflow (when the result is negative).
-//      *
-//      * Counterpart to Solidity's `-` operator.
-//      *
-//      * Requirements:
-//      *
-//      * - Subtraction cannot overflow.
-//      */
-//     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-//         return sub(a, b, "SafeMath: subtraction overflow");
-//     }
-
-//     /**
-//      * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
-//      * overflow (when the result is negative).
-//      *
-//      * Counterpart to Solidity's `-` operator.
-//      *
-//      * Requirements:
-//      *
-//      * - Subtraction cannot overflow.
-//      */
-//     function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-//         require(b <= a, errorMessage);
-//         uint256 c = a - b;
-
-//         return c;
-//     }
-
-//     /**
-//      * @dev Returns the multiplication of two unsigned integers, reverting on
-//      * overflow.
-//      *
-//      * Counterpart to Solidity's `*` operator.
-//      *
-//      * Requirements:
-//      *
-//      * - Multiplication cannot overflow.
-//      */
-//     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-//         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-//         // benefit is lost if 'b' is also tested.
-//         // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-//         if (a == 0) {
-//             return 0;
-//         }
-
-//         uint256 c = a * b;
-//         require(c / a == b, "SafeMath: multiplication overflow");
-
-//         return c;
-//     }
-
-//     /**
-//      * @dev Returns the integer division of two unsigned integers. Reverts on
-//      * division by zero. The result is rounded towards zero.
-//      *
-//      * Counterpart to Solidity's `/` operator. Note: this function uses a
-//      * `revert` opcode (which leaves remaining gas untouched) while Solidity
-//      * uses an invalid opcode to revert (consuming all remaining gas).
-//      *
-//      * Requirements:
-//      *
-//      * - The divisor cannot be zero.
-//      */
-//     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-//         return div(a, b, "SafeMath: division by zero");
-//     }
-
-//     /**
-//      * @dev Returns the integer division of two unsigned integers. Reverts with custom message on
-//      * division by zero. The result is rounded towards zero.
-//      *
-//      * Counterpart to Solidity's `/` operator. Note: this function uses a
-//      * `revert` opcode (which leaves remaining gas untouched) while Solidity
-//      * uses an invalid opcode to revert (consuming all remaining gas).
-//      *
-//      * Requirements:
-//      *
-//      * - The divisor cannot be zero.
-//      */
-//     function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-//         require(b > 0, errorMessage);
-//         uint256 c = a / b;
-//         // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-
-//         return c;
-//     }
-
-//     /**
-//      * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-//      * Reverts when dividing by zero.
-//      *
-//      * Counterpart to Solidity's `%` operator. This function uses a `revert`
-//      * opcode (which leaves remaining gas untouched) while Solidity uses an
-//      * invalid opcode to revert (consuming all remaining gas).
-//      *
-//      * Requirements:
-//      *
-//      * - The divisor cannot be zero.
-//      */
-//     function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-//         return mod(a, b, "SafeMath: modulo by zero");
-//     }
-
-//     /**
-//      * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-//      * Reverts with custom message when dividing by zero.
-//      *
-//      * Counterpart to Solidity's `%` operator. This function uses a `revert`
-//      * opcode (which leaves remaining gas untouched) while Solidity uses an
-//      * invalid opcode to revert (consuming all remaining gas).
-//      *
-//      * Requirements:
-//      *
-//      * - The divisor cannot be zero.
-//      */
-//     function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-//         require(b != 0, errorMessage);
-//         return a % b;
-//     }
-// }
 
 library IterableMapping {
     // Iterable mapping from address to uint;
@@ -203,24 +56,20 @@ library IterableMapping {
 }
 
 contract VotingToken is Sharing(1000) {
-    // using SafeMath for uint256;
     using IterableMapping for IterableMapping.Map;
 
     string public name = "ValTokenBurnFull";
     string public symbol = "VLTBF";
-    // uint256 public totalSupply;
     uint256 public feePerTransaction = 1;
-    // address private owner;
     uint8 public decimals = 0;
-    // address[] public owners;
     uint256 public voteDuration;
-    //from this time on tokens may be burned +24 hours from 01.07.20
+    //from this time on tokens may be burned +24 hours from release date
     uint256 public burnStartTime = now + 24 hours;
     uint256 public totalReward;
     uint256 restReward;
     uint256 lastDivideRewardTime = now;
     uint ownerReward;
-    
+    //a list of events to be checked on Etherscan.io
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     event Burned(uint256 amount);
@@ -231,10 +80,7 @@ contract VotingToken is Sharing(1000) {
     struct CandidateData {
         address proposal;
         mapping(address => uint8) votes;
-        // do we need total votes?
         uint32 positive;
-        //we can track only positive number;
-        // uint32 negative;
         bool alreadyOwner;
         bool isCandidate;
     }
@@ -255,32 +101,19 @@ contract VotingToken is Sharing(1000) {
 
     constructor() public {
         owner = msg.sender;
-        
-        // uint256 tokenPerOwner = _initialSupply.div(owners.length);
-        // uint256 tokensLeft = tokenPerOwner.mod(owners.length);
-        
         for (uint i = 0; i < owners.length; i++ ){
             eligibleOwners[owners[i]] = true; 
             // balanceOf[owners[i]] = tokenPerOwner;
             map.set(owners[i], 0);
         }
-        
-        // totalSupply = _initialSupply.sub(tokensLeft);
-        //allocate initial supply
-        // emit Transfer(address(0), owner, _initialSupply);
     }
     //Reward distribution
     function divideUpReward() private onlyOwners {
-        
-        
         for (uint8 i = 0; i < map.size(); i++){
             ownerReward = totalReward * balanceOf[map.getKeyAtIndex(i)] / totalTokenSupply;
-            map.values[map.getKeyAtIndex(i)] += ownerReward;
-            
-            
+            map.values[map.getKeyAtIndex(i)] += ownerReward; 
         }
         totalReward = 0;
-
     }
 
     function withdrawReward() public onlyOwners {
@@ -298,11 +131,6 @@ contract VotingToken is Sharing(1000) {
         divideUpReward();
         emit Received(msg.sender, msg.value);
     }
-   
-
-    //Additional emitioon of tokensLeft
-   
-
     //Voting functionality
     
     function addCandidate(address _candidateAddress) public onlyOwners {
@@ -358,12 +186,7 @@ contract VotingToken is Sharing(1000) {
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
-
-    
- 
     //allowance implementation
-  
-
     function approve(address _spender, uint256 _value) public returns (bool success) {
       allowance[msg.sender][_spender] = _value;
 
@@ -382,8 +205,6 @@ contract VotingToken is Sharing(1000) {
       return true;
     }
 
-
-
     //burnign function
   function burn(uint256 _value)  public onlyOwners returns (bool success)  {
       //we restrict ourseleves to burn tokens after some perion of time.
@@ -398,8 +219,6 @@ contract VotingToken is Sharing(1000) {
           return true;
       }
   }
-   
-   
 }
 
 
