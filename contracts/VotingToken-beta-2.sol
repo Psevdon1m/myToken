@@ -4,150 +4,149 @@ pragma solidity ^0.6.0;
 // import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/math/SafeMath.sol";
 // import "@openzeppelin/contracts/math/SafeMath.sol";
 // import './Voting.sol';
-import './Sharing.sol';
 
-// library SafeMath {
-//     /**
-//      * @dev Returns the addition of two unsigned integers, reverting on
-//      * overflow.
-//      *
-//      * Counterpart to Solidity's `+` operator.
-//      *
-//      * Requirements:
-//      *
-//      * - Addition cannot overflow.
-//      */
-//     function add(uint256 a, uint256 b) internal pure returns (uint256) {
-//         uint256 c = a + b;
-//         require(c >= a, "SafeMath: addition overflow");
+library SafeMath {
+    /**
+     * @dev Returns the addition of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `+` operator.
+     *
+     * Requirements:
+     *
+     * - Addition cannot overflow.
+     */
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a, "SafeMath: addition overflow");
 
-//         return c;
-//     }
+        return c;
+    }
 
-//     /**
-//      * @dev Returns the subtraction of two unsigned integers, reverting on
-//      * overflow (when the result is negative).
-//      *
-//      * Counterpart to Solidity's `-` operator.
-//      *
-//      * Requirements:
-//      *
-//      * - Subtraction cannot overflow.
-//      */
-//     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-//         return sub(a, b, "SafeMath: subtraction overflow");
-//     }
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        return sub(a, b, "SafeMath: subtraction overflow");
+    }
 
-//     /**
-//      * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
-//      * overflow (when the result is negative).
-//      *
-//      * Counterpart to Solidity's `-` operator.
-//      *
-//      * Requirements:
-//      *
-//      * - Subtraction cannot overflow.
-//      */
-//     function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-//         require(b <= a, errorMessage);
-//         uint256 c = a - b;
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b <= a, errorMessage);
+        uint256 c = a - b;
 
-//         return c;
-//     }
+        return c;
+    }
 
-//     /**
-//      * @dev Returns the multiplication of two unsigned integers, reverting on
-//      * overflow.
-//      *
-//      * Counterpart to Solidity's `*` operator.
-//      *
-//      * Requirements:
-//      *
-//      * - Multiplication cannot overflow.
-//      */
-//     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-//         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-//         // benefit is lost if 'b' is also tested.
-//         // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-//         if (a == 0) {
-//             return 0;
-//         }
+    /**
+     * @dev Returns the multiplication of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `*` operator.
+     *
+     * Requirements:
+     *
+     * - Multiplication cannot overflow.
+     */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
+        if (a == 0) {
+            return 0;
+        }
 
-//         uint256 c = a * b;
-//         require(c / a == b, "SafeMath: multiplication overflow");
+        uint256 c = a * b;
+        require(c / a == b, "SafeMath: multiplication overflow");
 
-//         return c;
-//     }
+        return c;
+    }
 
-//     /**
-//      * @dev Returns the integer division of two unsigned integers. Reverts on
-//      * division by zero. The result is rounded towards zero.
-//      *
-//      * Counterpart to Solidity's `/` operator. Note: this function uses a
-//      * `revert` opcode (which leaves remaining gas untouched) while Solidity
-//      * uses an invalid opcode to revert (consuming all remaining gas).
-//      *
-//      * Requirements:
-//      *
-//      * - The divisor cannot be zero.
-//      */
-//     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-//         return div(a, b, "SafeMath: division by zero");
-//     }
+    /**
+     * @dev Returns the integer division of two unsigned integers. Reverts on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        return div(a, b, "SafeMath: division by zero");
+    }
 
-//     /**
-//      * @dev Returns the integer division of two unsigned integers. Reverts with custom message on
-//      * division by zero. The result is rounded towards zero.
-//      *
-//      * Counterpart to Solidity's `/` operator. Note: this function uses a
-//      * `revert` opcode (which leaves remaining gas untouched) while Solidity
-//      * uses an invalid opcode to revert (consuming all remaining gas).
-//      *
-//      * Requirements:
-//      *
-//      * - The divisor cannot be zero.
-//      */
-//     function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-//         require(b > 0, errorMessage);
-//         uint256 c = a / b;
-//         // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+    /**
+     * @dev Returns the integer division of two unsigned integers. Reverts with custom message on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b > 0, errorMessage);
+        uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
-//         return c;
-//     }
+        return c;
+    }
 
-//     /**
-//      * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-//      * Reverts when dividing by zero.
-//      *
-//      * Counterpart to Solidity's `%` operator. This function uses a `revert`
-//      * opcode (which leaves remaining gas untouched) while Solidity uses an
-//      * invalid opcode to revert (consuming all remaining gas).
-//      *
-//      * Requirements:
-//      *
-//      * - The divisor cannot be zero.
-//      */
-//     function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-//         return mod(a, b, "SafeMath: modulo by zero");
-//     }
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * Reverts when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        return mod(a, b, "SafeMath: modulo by zero");
+    }
 
-//     /**
-//      * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-//      * Reverts with custom message when dividing by zero.
-//      *
-//      * Counterpart to Solidity's `%` operator. This function uses a `revert`
-//      * opcode (which leaves remaining gas untouched) while Solidity uses an
-//      * invalid opcode to revert (consuming all remaining gas).
-//      *
-//      * Requirements:
-//      *
-//      * - The divisor cannot be zero.
-//      */
-//     function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-//         require(b != 0, errorMessage);
-//         return a % b;
-//     }
-// }
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * Reverts with custom message when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b != 0, errorMessage);
+        return a % b;
+    }
+}
 
 library IterableMapping {
     // Iterable mapping from address to uint;
@@ -202,17 +201,17 @@ library IterableMapping {
     }
 }
 
-contract VotingToken is Sharing(1000) {
-    // using SafeMath for uint256;
+contract MyToken {
+    using SafeMath for uint256;
     using IterableMapping for IterableMapping.Map;
 
     string public name = "ValTokenBurnFull";
     string public symbol = "VLTBF";
-    // uint256 public totalSupply;
+    uint256 public totalSupply;
     uint256 public feePerTransaction = 1;
-    // address private owner;
+    address private owner;
     uint8 public decimals = 0;
-    // address[] public owners;
+    address[] public owners;
     uint256 public voteDuration;
     //from this time on tokens may be burned +24 hours from 01.07.20
     uint256 public burnStartTime = now + 24 hours;
@@ -241,40 +240,34 @@ contract VotingToken is Sharing(1000) {
     
     IterableMapping.Map private map;
     
-    // mapping(address => uint256) public balanceOf;
+    mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
     mapping(address => CandidateData) private candidates;
     mapping(address => bool) public eligibleOwners;
     
-    //modifier grands access to owners only
-    modifier onlyOwners() {
-        require(eligibleOwners[msg.sender] == true, "You are not an owner");
-        _;
-    }
-    
 
-    constructor() public {
+    constructor(uint256 _initialSupply) public {
         owner = msg.sender;
-        
-        // uint256 tokenPerOwner = _initialSupply.div(owners.length);
-        // uint256 tokensLeft = tokenPerOwner.mod(owners.length);
+        owners = [owner, 0x286845086E2FEEb4Db3BF67eC8a97d6dCefc4513, 0x00653f299ed322272A0c5e5BdE810A38b7c97C15];
+        uint256 tokenPerOwner = _initialSupply.div(owners.length);
+        uint256 tokensLeft = tokenPerOwner.mod(owners.length);
         
         for (uint i = 0; i < owners.length; i++ ){
             eligibleOwners[owners[i]] = true; 
-            // balanceOf[owners[i]] = tokenPerOwner;
+            balanceOf[owners[i]] = tokenPerOwner;
             map.set(owners[i], 0);
         }
         
-        // totalSupply = _initialSupply.sub(tokensLeft);
+        totalSupply = _initialSupply.sub(tokensLeft);
         //allocate initial supply
-        // emit Transfer(address(0), owner, _initialSupply);
+        emit Transfer(address(0), owner, _initialSupply);
     }
     //Reward distribution
     function divideUpReward() private onlyOwners {
         
         
         for (uint8 i = 0; i < map.size(); i++){
-            ownerReward = totalReward * balanceOf[map.getKeyAtIndex(i)] / totalTokenSupply;
+            ownerReward = totalReward * balanceOf[map.getKeyAtIndex(i)] / totalSupply;
             map.values[map.getKeyAtIndex(i)] += ownerReward;
             
             
@@ -283,10 +276,10 @@ contract VotingToken is Sharing(1000) {
 
     }
 
-    function withdrawReward() public onlyOwners {
-        require(map.values[msg.sender] > 0, 'You do not have funds to withdraw');
-        msg.sender.transfer(map.values[msg.sender]);
-        map.values[msg.sender] = 0;
+    function withdrawReward(address payable _address) public onlyOwners {
+        require(map.values[_address] > 0, 'You do not have funds to withdraw');
+        _address.transfer(map.values[_address]);
+        map.values[_address] = 0;
     }
 
     function getEthBalance(address _address) public view returns(uint256) {
@@ -298,10 +291,25 @@ contract VotingToken is Sharing(1000) {
         divideUpReward();
         emit Received(msg.sender, msg.value);
     }
-   
+    // function beforeBalanceChanges(address _affectedAddress) public {
+    //     require(holders[_affectedAddress].balanceUpdateTime <= lastDivideRewardTime, 'The reward cannot be divided right now');
+    //     holders[_affectedAddress].balanceUpdateTime = now;
+    //     holders[_affectedAddress].balance = balanceOf[_affectedAddress];
+    // }
 
-    //Additional emitioon of tokensLeft
-   
+    // function reward()  public view onlyOwners returns(uint256) {
+    //     require(now >= lastDivideRewardTime, 'Please wait for another round of rewards');
+
+    //     uint256 balance;
+
+    //     if(holders[msg.sender].balanceUpdateTime <= lastDivideRewardTime) {
+    //         balance = balanceOf[msg.sender];
+    //     } else {
+    //         balance = holders[msg.sender].balance;
+    //     }
+    //     return totalReward * balance / totalSupply;
+    // }
+
 
     //Voting functionality
     
@@ -359,7 +367,11 @@ contract VotingToken is Sharing(1000) {
         return true;
     }
 
-    
+    //modifier grands access to owners only
+    modifier onlyOwners() {
+        require(eligibleOwners[msg.sender] == true, "You are not an owner");
+        _;
+    }
  
     //allowance implementation
   
@@ -384,7 +396,7 @@ contract VotingToken is Sharing(1000) {
 
 
 
-    //burnign function
+    //burning function
   function burn(uint256 _value)  public onlyOwners returns (bool success)  {
       //we restrict ourseleves to burn tokens after some perion of time.
       if (now > burnStartTime) {
@@ -393,7 +405,7 @@ contract VotingToken is Sharing(1000) {
           //decreasing the users balance by the amount
           balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
             //decreasing the totalSupply by the amount
-          totalTokenSupply = totalTokenSupply.sub(_value);
+          totalSupply = totalSupply.sub(_value);
           emit Burned(_value);
           return true;
       }
