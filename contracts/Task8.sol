@@ -176,14 +176,14 @@ contract MyToken {
     }
     receive() external payable {
         totalReward += msg.value;
-        divideUpReward();
+        divideUpAndShareReward();
         
         
         emit Received(msg.sender, msg.value);
     }
     
     //Reward distribution
-    function divideUpReward() internal  onlyOwners {
+    function divideUpAndShareReward() internal  onlyOwners {
         for (uint8 i = 0; i < map.size(); i++){
             ownerReward = totalReward * balanceOf[map.getKeyAtIndex(i)] / totalSupply;
             map.values[map.getKeyAtIndex(i)] += ownerReward; 
