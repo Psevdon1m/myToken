@@ -1,9 +1,6 @@
 pragma solidity ^0.6.0;
 
 
-// import "../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
-// import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/math/SafeMath.sol";
-// import "@openzeppelin/contracts/math/SafeMath.sol";
 library SafeMath {
     /**
      * @dev Returns the addition of two unsigned integers, reverting on
@@ -147,115 +144,35 @@ library SafeMath {
     }
 }
 
-contract MyToken {
+contract Sharing {
     using SafeMath for uint256;
-    string public name = "ValTokenBurnFull";
-    string public symbol = "VLTBF";
-    uint256 public totalSupply;
-    uint256 public feePerTransaction = 1;
-    address private owner;
-    uint8 public decimals = 0;
-    
+    address public owner;
     address[] public owners;
-    string testMessage = 'it works';
-    //from this time on tokens may be burned +24 hours from 01.07.20
-    uint256 public burnStartTime = now + 24 hours;
-
+    uint256 public totalTokenSupply;
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
-    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-    event Burned(uint256 amount);
-
+    
     mapping(address => uint256) public balanceOf;
-
-    mapping(address => mapping(address => uint256)) public allowance;
-
+    
     constructor(uint256 _initialSupply) public {
         owner = msg.sender;
+        owners = [owner, 0xb1c2933166cc51d77872A36228a2362ba1D97077];
+        emitAndShareTokens(_initialSupply);
+        totalTokenSupply = _initialSupply;
+    }
+    
+     function emitAndShareTokens(uint256 _amount) public {
+        require(_amount > 0, "You cannot enter negative values");
+        require(msg.sender == owner, "only owners can initialize new emission");
+        uint256 tokenPerOwner = _amount.div(owners.length);
+        uint256 tokensLeft = tokenPerOwner.mod(owners.length);
+        uint256 tokenSupply;
         
-        owners = [owner, 0x30B61000B318dFaFEf31b7Dc9A7084f4EF1CE4cb, 0x6350b6659210C47e4810fE885151bCdC07DDa758,
-        0xd07DffA0006d9fea011E26479D55E8Bcb2A8AE88, 0xa42fc7ae13fF09700F8169bCD0e26834E8D26750];
-        uint256 tokenPerOwner = _initialSupply / owners.length;
-        
-        for (uint i = 0; i< owners.length; i++ ){
-            balanceOf[owners[i]] = tokenPerOwner;
+        for (uint i = 0; i < owners.length; i++ ){
+            balanceOf[owners[i]] = balanceOf[owners[i]].add(tokenPerOwner);
+            emit Transfer(address(0), owners[i], tokenPerOwner);
         }
-        
-        totalSupply = _initialSupply;
-        //allocate initial supply
-        emit Transfer(address(0), owner, _initialSupply);
+        tokenSupply = tokenSupply.add(_amount.sub(tokensLeft));
+        totalTokenSupply = totalTokenSupply.add(tokenSupply);
     }
 
-    //Transfer function
-    function transfer(address _to, uint256 _value)
-        public
-        payable
-        returns (bool success)
-    {
-        require(balanceOf[msg.sender] >= _value, 'error, balance is insufficient');
-        balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
-        balanceOf[_to] = balanceOf[_to].add(_value.sub(feePerTransaction));
-        balanceOf[owner] = balanceOf[owner].add(feePerTransaction);
-        //transfer event
-        emit Transfer(msg.sender, _to, _value);
-        return true;
-    }
-
-    //change owner
-    //checks  whether a person that called the contract is among owners 
-    function isOwner() public view returns (bool) {
-        for (uint i = 0; i<owners.length; i++){
-            if(msg.sender == owners[i]){
-                return true;
-            }
-        }
-    }
-    //modifier grands access to owners only
-    modifier onlyOwner() {
-        require(isOwner(), "You are not an owner");
-        _;
-    }
-    
-    function vote() public view   onlyOwner  returns (string memory){
-         
-    }
-    
-    
- 
-    //allowance implementation
-  
-
-    function approve(address _spender, uint256 _value) public returns (bool success) {
-      allowance[msg.sender][_spender] = _value;
-
-      //will trigger the approve event
-      emit Approval(msg.sender, _spender, _value);
-      return true;
-  }
-
-    function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
-      require(balanceOf[_from] >= _value, "insufficient balance");
-      require(allowance[_from][msg.sender] >= _value, "allowance exceeded");
-      balanceOf[_from] = balanceOf[_from].sub(_value);
-      balanceOf[_to] = balanceOf[_to].add(_value);
-      allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);
-      emit Transfer(_from, _to, _value);
-      return true;
-    }
-
-
-
-    // burnign function
-   function burn(uint256 _value)  public onlyOwner returns (bool success)  {
-       //we restrict ourseleves to burn tokens after some perion of time.
-       if (now > burnStartTime) {
-           //checking that amount is less or equal to user's balance
-           require(balanceOf[msg.sender] >= _value, 'balance insufficient');
-           //decreasing the users balance by the amount
-           balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
-            //decreasing the totalSupply by the amount
-           totalSupply = totalSupply.sub(_value);
-           emit Burned(_value);
-           return true;
-       }
-   }
 }

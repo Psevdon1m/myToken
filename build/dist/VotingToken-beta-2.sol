@@ -4,6 +4,7 @@ pragma solidity ^0.6.0;
 // import "../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 // import "github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/math/SafeMath.sol";
 // import "@openzeppelin/contracts/math/SafeMath.sol";
+// import './Voting.sol';
 library SafeMath {
     /**
      * @dev Returns the addition of two unsigned integers, reverting on
@@ -147,45 +148,211 @@ library SafeMath {
     }
 }
 
+library IterableMapping {
+    // Iterable mapping from address to uint;
+    struct Map {
+        address[] keys;
+        mapping(address => uint) values;
+        mapping(address => uint) indexOf;
+        mapping(address => bool) inserted;
+
+    }
+
+    function get(Map storage map, address key) public view returns (uint) {
+        return map.values[key];
+    }
+
+    function getKeyAtIndex(Map storage map, uint index) public view returns (address) {
+        return map.keys[index];
+    }
+
+    function size(Map storage map) public view returns (uint) {
+        return map.keys.length;
+    }
+
+    function set(Map storage map, address key, uint val) public {
+        if (map.inserted[key]) {
+            map.values[key] = val;
+        } else {
+            map.inserted[key] = true;
+            map.values[key] = val;
+            map.indexOf[key] = map.keys.length;
+            map.keys.push(key);
+        }
+    }
+
+    function remove(Map storage map, address key) public {
+        if (!map.inserted[key]) {
+            return;
+        }
+
+        delete map.inserted[key];
+        delete map.values[key];
+
+        uint index = map.indexOf[key];
+        uint lastIndex = map.keys.length - 1;
+        address lastKey = map.keys[lastIndex];
+
+        map.indexOf[lastKey] = index;
+        delete map.indexOf[key];
+
+        map.keys[index] = lastKey;
+        map.keys.pop();
+    }
+}
+
 contract MyToken {
     using SafeMath for uint256;
+    using IterableMapping for IterableMapping.Map;
+
     string public name = "ValTokenBurnFull";
     string public symbol = "VLTBF";
     uint256 public totalSupply;
     uint256 public feePerTransaction = 1;
     address private owner;
     uint8 public decimals = 0;
-    
     address[] public owners;
-    string testMessage = 'it works';
+    uint256 public voteDuration;
     //from this time on tokens may be burned +24 hours from 01.07.20
     uint256 public burnStartTime = now + 24 hours;
-
+    uint256 public totalReward;
+    uint256 restReward;
+    uint256 lastDivideRewardTime = now;
+    uint ownerReward;
+    
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     event Burned(uint256 amount);
-
+    event CandidateAdded(address indexed _candidate);
+    event VoteHappened(address indexed _candidate, uint256 _numberOfVotes);
+    event Received(address sender, uint256 value);
+    
+    struct CandidateData {
+        address proposal;
+        mapping(address => uint8) votes;
+        // do we need total votes?
+        uint32 positive;
+        //we can track only positive number;
+        // uint32 negative;
+        bool alreadyOwner;
+        bool isCandidate;
+    }
+    
+    IterableMapping.Map private map;
+    
     mapping(address => uint256) public balanceOf;
-
     mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => CandidateData) private candidates;
+    mapping(address => bool) public eligibleOwners;
+    
 
     constructor(uint256 _initialSupply) public {
         owner = msg.sender;
+        owners = [owner, 0x286845086E2FEEb4Db3BF67eC8a97d6dCefc4513, 0x00653f299ed322272A0c5e5BdE810A38b7c97C15];
+        uint256 tokenPerOwner = _initialSupply.div(owners.length);
+        uint256 tokensLeft = tokenPerOwner.mod(owners.length);
         
-        owners = [owner, 0x30B61000B318dFaFEf31b7Dc9A7084f4EF1CE4cb, 0x6350b6659210C47e4810fE885151bCdC07DDa758,
-        0xd07DffA0006d9fea011E26479D55E8Bcb2A8AE88, 0xa42fc7ae13fF09700F8169bCD0e26834E8D26750];
-        uint256 tokenPerOwner = _initialSupply / owners.length;
-        
-        for (uint i = 0; i< owners.length; i++ ){
+        for (uint i = 0; i < owners.length; i++ ){
+            eligibleOwners[owners[i]] = true; 
             balanceOf[owners[i]] = tokenPerOwner;
+            map.set(owners[i], 0);
         }
         
-        totalSupply = _initialSupply;
+        totalSupply = _initialSupply.sub(tokensLeft);
         //allocate initial supply
         emit Transfer(address(0), owner, _initialSupply);
     }
+    //Reward distribution
+    function divideUpReward() private onlyOwners {
+        
+        
+        for (uint8 i = 0; i < map.size(); i++){
+            ownerReward = totalReward * balanceOf[map.getKeyAtIndex(i)] / totalSupply;
+            map.values[map.getKeyAtIndex(i)] += ownerReward;
+            
+            
+        }
+        totalReward = 0;
 
-    //Transfer function
+    }
+
+    function withdrawReward(address payable _address) public onlyOwners {
+        require(map.values[_address] > 0, 'You do not have funds to withdraw');
+        _address.transfer(map.values[_address]);
+        map.values[_address] = 0;
+    }
+
+    function getEthBalance(address _address) public view returns(uint256) {
+        return map.get(_address);
+    }
+    
+    receive() external payable {
+        totalReward += msg.value;
+        divideUpReward();
+        emit Received(msg.sender, msg.value);
+    }
+    // function beforeBalanceChanges(address _affectedAddress) public {
+    //     require(holders[_affectedAddress].balanceUpdateTime <= lastDivideRewardTime, 'The reward cannot be divided right now');
+    //     holders[_affectedAddress].balanceUpdateTime = now;
+    //     holders[_affectedAddress].balance = balanceOf[_affectedAddress];
+    // }
+
+    // function reward()  public view onlyOwners returns(uint256) {
+    //     require(now >= lastDivideRewardTime, 'Please wait for another round of rewards');
+
+    //     uint256 balance;
+
+    //     if(holders[msg.sender].balanceUpdateTime <= lastDivideRewardTime) {
+    //         balance = balanceOf[msg.sender];
+    //     } else {
+    //         balance = holders[msg.sender].balance;
+    //     }
+    //     return totalReward * balance / totalSupply;
+    // }
+
+
+    //Voting functionality
+    
+    function addCandidate(address _candidateAddress) public onlyOwners {
+        require(eligibleOwners[_candidateAddress] == false, 'You are adding a person that is already among owners');
+        require(candidates[_candidateAddress].isCandidate == false, 'This person is already a candidate!');
+        candidates[_candidateAddress].proposal = msg.sender;
+        candidates[_candidateAddress].votes[msg.sender] = 1;
+        candidates[_candidateAddress].positive = 1;
+        candidates[_candidateAddress].alreadyOwner = eligibleOwners[_candidateAddress];
+        candidates[_candidateAddress].isCandidate = true;
+        emit CandidateAdded(_candidateAddress);
+    }
+    
+    function vote(address _candidateAddress, bool _choice) public onlyOwners {
+        require(candidates[_candidateAddress].isCandidate, 'this address is not among candidates');
+        require(candidates[_candidateAddress].votes[msg.sender] == 0, 'You have already voted!');
+        if(_choice){
+            candidates[_candidateAddress].votes[msg.sender] = 1;
+            candidates[_candidateAddress].positive++;
+        }else {
+            candidates[_candidateAddress].votes[msg.sender] = 2;
+        }
+    }
+    
+    function endVote(address _candidateAddress) public onlyOwners returns(bool decision) {
+        // require(candidates[_candidateAddress].totalVotes == owners.length, 'Not enoght votes to end the voting');
+        if(candidates[_candidateAddress].positive > owners.length / 2) {
+            owners.push(_candidateAddress);
+            eligibleOwners[_candidateAddress] = true;
+            delete candidates[_candidateAddress];
+            emit VoteHappened(_candidateAddress, candidates[_candidateAddress].positive);
+            return true;
+
+        }else {
+            delete candidates[_candidateAddress];
+            emit VoteHappened(_candidateAddress, candidates[_candidateAddress].positive);
+            return false;
+        }
+        
+    }
+    
+      //Transfer function
     function transfer(address _to, uint256 _value)
         public
         payable
@@ -200,26 +367,11 @@ contract MyToken {
         return true;
     }
 
-    //change owner
-    //checks  whether a person that called the contract is among owners 
-    function isOwner() public view returns (bool) {
-        for (uint i = 0; i<owners.length; i++){
-            if(msg.sender == owners[i]){
-                return true;
-            }
-        }
-    }
     //modifier grands access to owners only
-    modifier onlyOwner() {
-        require(isOwner(), "You are not an owner");
+    modifier onlyOwners() {
+        require(eligibleOwners[msg.sender] == true, "You are not an owner");
         _;
     }
-    
-    function vote() public view   onlyOwner  returns (string memory){
-         
-    }
-    
-    
  
     //allowance implementation
   
@@ -244,18 +396,20 @@ contract MyToken {
 
 
 
-    // burnign function
-   function burn(uint256 _value)  public onlyOwner returns (bool success)  {
-       //we restrict ourseleves to burn tokens after some perion of time.
-       if (now > burnStartTime) {
-           //checking that amount is less or equal to user's balance
-           require(balanceOf[msg.sender] >= _value, 'balance insufficient');
-           //decreasing the users balance by the amount
-           balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
+    //burning function
+  function burn(uint256 _value)  public onlyOwners returns (bool success)  {
+      //we restrict ourseleves to burn tokens after some perion of time.
+      if (now > burnStartTime) {
+          //checking that amount is less or equal to user's balance
+          require(balanceOf[msg.sender] >= _value, 'balance insufficient');
+          //decreasing the users balance by the amount
+          balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
             //decreasing the totalSupply by the amount
-           totalSupply = totalSupply.sub(_value);
-           emit Burned(_value);
-           return true;
-       }
-   }
+          totalSupply = totalSupply.sub(_value);
+          emit Burned(_value);
+          return true;
+      }
+  }
+   
+   
 }

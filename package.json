@@ -10,7 +10,8 @@
 		"@openzeppelin/contracts": "^3.1.0",
 		"sol-merger": "^3.1.0",
 		"solc": "^0.6.0",
-		"truffle-hdwallet-provider": "0.0.3"
+		"truffle-hdwallet-provider": "0.0.3",
+		"web3": "^1.2.9"
 	},
 	"devDependencies": {},
 	"scripts": {
