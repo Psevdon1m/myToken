@@ -142,7 +142,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -161,7 +162,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -174,7 +176,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -187,7 +190,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -206,7 +210,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -232,7 +237,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -245,7 +251,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -258,7 +265,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -277,7 +285,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -290,7 +299,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -303,7 +313,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -316,7 +327,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -329,11 +341,13 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "payable": true
     },
     {
       "inputs": [],
@@ -359,7 +373,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -433,7 +448,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -23808,15 +23824,69 @@
           ],
           "name": "Transfer",
           "type": "event"
+        },
+        "0xaa38be308bdffe126c2b6be720070355eb22e0efc549ac39221b1ce71642ed40": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_candidate",
+              "type": "address"
+            }
+          ],
+          "name": "CandidateAdded",
+          "type": "event"
+        },
+        "0x88a5966d370b9919b20f3e2c13ff65706f196a4e32cc2c12bf57088f88525874": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Received",
+          "type": "event"
+        },
+        "0x63c204601fad8f75b3722a8a81b870d8a8c806ab155ad60029ceebe142a56157": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_candidate",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_numberOfVotes",
+              "type": "uint256"
+            }
+          ],
+          "name": "VoteHappened",
+          "type": "event"
         }
       },
-      "links": {},
-      "address": "0x26a715ACc3ab2Ba09146659044aaebfFfb247154",
-      "transactionHash": "0x15678e3cf26d1db9207ec55e11248c980cfe23012402d15327efd7e09ff0e6f4"
+      "links": {
+        "IterableMapping": "0x8709C92CBFaC61EDa82bf96575F66eb80b75024d"
+      },
+      "address": "0xEBF117cd57567A47BC01e01A6B3ccF5BBBd1cc2C",
+      "transactionHash": "0xa89e6fe528cbebd2af8b10d42a78c6dd0b1873e215f8be5aff6c0b58979e4d3c"
     }
   },
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-07-13T13:24:21.654Z",
+  "updatedAt": "2020-07-13T14:32:03.462Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },

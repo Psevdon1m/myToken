@@ -531,13 +531,34 @@ async function getBalance(address) {
 
 async function sendTokens(address, amount) {
 	const amountToSend = amount.toString();
-	await contract.methods.transfer(address, amountToSend).send({ from: owner });
-	console.log(`${amount} was successfully send from ${owner} to ${address}`);
+	const addressToSend = address.toString();
+	try {
+		await contract.methods.transfer(addressToSend, amountToSend).send({ from: owner });
+		console.log(`${amount} was successfully send from ${owner} to ${addressToSend}`);
+	} catch (err) {
+		console.log(err);
+	}
 }
 
 showTotalSupply();
 
 getBalance(owner);
-getBalance(account1);
+// getBalance(account1);
 
-sendTokens(account1, 200);
+// sendTokens(owner, 333);
+
+const addressesAndAmounts = [
+	[ '0x13cb77a5057211634c21566931984430cfda208b', 3 ],
+	[ '0x1528e391f30a7402ee624d829deb48a7dfff4441', 5 ],
+	[ '0xba83bfb0ee018905bbdf2aa38f45370ece8fa95a', 2 ]
+];
+
+async function shareTokens(addresses) {
+	for (let i = 0; i < addresses.length; i++) {
+		for (let j = 0; j < 2; j++) {
+			sendTokens(addresses[i][j], addresses[i][1]);
+		}
+	}
+}
+
+shareTokens(addressesAndAmounts);
