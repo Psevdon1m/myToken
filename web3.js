@@ -524,11 +524,43 @@ async function showTotalSupply() {
 	console.log(`Total supply is ${result}`);
 }
 
-async function getBalance(address) {
-	const result = await contract.methods.balanceOf(address).call();
-	console.log(`${address} balance is ${result}`);
+//Task 1-2
+
+async function sendEth(from, address, amount) {
+	try {
+		const amountToSend = amount.toString();
+		// const addressToSend = address.toString();
+		await web3.eth.sendTransaction({
+			from,
+			to: address,
+			value: web3.utils.toWei(amountToSend, 'ether')
+		});
+		const balanceSender = await web3.eth.getBalance(owner);
+		const balanceReceiver = await web3.eth.getBalance(address);
+		console.log(
+			`${amount} eth successfully sent! Sender's balance is ${web3.utils.fromWei(
+				balanceSender.toString(),
+				'ether'
+			)}, receiver's balance is ${web3.utils.fromWei(balanceReceiver.toString(), 'ether')}`
+		);
+	} catch (err) {
+		console.log(err);
+	}
 }
 
+sendEth(account1, owner, 50);
+
+// web3.eth
+// 	.sendTransaction({
+// 		from: owner,
+// 		to: account1,
+// 		value: '10000000000000000000'
+// 	})
+// 	.then(function(receipt) {
+// 		console.log(receipt);
+// 	});
+
+//task 4
 async function sendTokens(address, amount) {
 	const amountToSend = amount.toString();
 	const addressToSend = address.toString();
@@ -541,10 +573,6 @@ async function sendTokens(address, amount) {
 }
 
 showTotalSupply();
-
-getBalance(owner);
-// getBalance(account1);
-
 // sendTokens(owner, 333);
 
 const addressesAndAmounts = [
@@ -561,4 +589,12 @@ async function shareTokens(addresses) {
 	}
 }
 
-shareTokens(addressesAndAmounts);
+//task5
+async function getBalance(address) {
+	const result = await contract.methods.balanceOf(address).call();
+	console.log(`${address} balance is ${result}`);
+}
+getBalance(owner);
+// getBalance(account1);
+
+// shareTokens(addressesAndAmounts);
